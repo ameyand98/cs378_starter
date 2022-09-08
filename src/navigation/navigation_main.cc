@@ -26,6 +26,7 @@
 #include <string.h>
 #include <inttypes.h>
 #include <vector>
+#include <cfloat>
 
 #include "glog/logging.h"
 #include "gflags/gflags.h"
@@ -71,6 +72,7 @@ DEFINE_string(init_topic,
               "initialpose",
               "Name of ROS topic for initialization");
 DEFINE_string(map, "GDC1", "Name of vector map file");
+// DEFINE_double(cp2_curvature, 0.5, "Curvature for arc path (cp2)");
 
 bool run_ = true;
 sensor_msgs::LaserScan last_laser_msg_;
@@ -83,18 +85,35 @@ void LaserCallback(const sensor_msgs::LaserScan& msg) {
            GetWallTime() - msg.header.stamp.toSec());
   }
   // Location of the laser on the robot. Assumes the laser is forward-facing.
-  const Vector2f kLaserLoc(0.2, 0);
+  // const Vector2f kLaserLoc(0.2, 0);
 
-  static vector<Vector2f> point_cloud_;
-  // TODO Convert the LaserScan to a point cloud
-  // The LaserScan parameters are accessible as follows:
-  // msg.angle_increment // Angular increment between subsequent rays
-  // msg.angle_max // Angle of the first ray
-  // msg.angle_min // Angle of the last ray
-  // msg.range_max // Maximum observable range
-  // msg.range_min // Minimum observable range
-  // msg.ranges[i] // The range of the i'th ray
-  navigation_->ObservePointCloud(point_cloud_, msg.header.stamp.toSec());
+  // static vector<Vector2f> point_cloud_;
+  // // TODO Convert the LaserScan to a point cloud
+  // // The LaserScan parameters are accessible as follows:
+  // // msg.angle_increment // Angular increment between subsequent rays
+  // // msg.angle_max // Angle of the first ray
+  // // msg.angle_min // Angle of the last ray
+  // // msg.range_max // Maximum observable range
+  // // msg.range_min // Minimum observable range
+  // // msg.ranges[i] // The range of the i'th ray
+  // navigation_->LaserToPtCloud(msg, kLaserLoc, &point_cloud_);
+  // navigation_->ObservePointCloud(point_cloud_, msg.header.stamp.toSec());
+  // vector<Eigen::Vector2f> collision_pts = navigation_->DetectCollisionPoints(FLAGS_cp2_curvature);
+  // vector<float> path_lens = navigation_->GetFreePathLength(&collision_pts, FLAGS_cp2_curvature);
+
+  // float min_free_path_length = FLT_MAX;
+  // Vector2f closest_pt;
+  // for (unsigned int i = 0; i < collision_pts.size(); i++) {
+  //   float distance = path_lens[i];
+  //   if (distance >= 0) {
+  //     min_free_path_length = std::min(min_free_path_length, distance);
+  //     closest_pt = collision_pts[i];
+  //   }
+  // }
+  // navigation_->SetDistRemaining(min_free_path_length);
+
+  navigation_->Navigation::AvoidObstacles(msg);
+  
   last_laser_msg_ = msg;
 }
 

@@ -37,6 +37,9 @@ struct Particle {
   Eigen::Vector2f loc;
   float angle;
   double weight;
+
+  Particle(Eigen::Vector2f loc, float angle, double weight) :
+    loc(loc), angle(angle), weight(weight) {}
 };
 
 class ParticleFilter {
@@ -77,6 +80,8 @@ class ParticleFilter {
   // Resample particles.
   void Resample();
 
+  Eigen::Vector2f PerformCoordTransform(const float odom_angle, const Eigen::Vector2f& odom_loc);
+
   // For debugging: get predicted point cloud from current location.
   void GetPredictedPointCloud(const Eigen::Vector2f& loc,
                               const float angle,
@@ -102,6 +107,8 @@ class ParticleFilter {
   Eigen::Vector2f prev_odom_loc_;
   float prev_odom_angle_;
   bool odom_initialized_;
+
+
 };
 }  // namespace slam
 

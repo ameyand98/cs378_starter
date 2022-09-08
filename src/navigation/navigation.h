@@ -20,6 +20,7 @@
 //========================================================================
 
 #include <vector>
+#include "sensor_msgs/LaserScan.h"
 
 #include "eigen3/Eigen/Dense"
 
@@ -27,6 +28,7 @@
 
 #ifndef NAVIGATION_H
 #define NAVIGATION_H
+using namespace std;
 
 namespace ros {
   class NodeHandle;
@@ -43,8 +45,23 @@ struct PathOption {
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 };
 
+struct NavConsts {
+  float a_max;
+  float v_max;
+  float d_max;
+};
+
+struct NavTimestepData {
+  float dist_remaining;
+  float stopping_dist;
+  float cur_v;
+  float cur_curv;
+  Eigen::Vector2f odom_loc;
+};
+
 class Navigation {
  public:
+  Eigen::Vector2f collision_pt;
 
    // Constructor
   explicit Navigation(const std::string& map_file, ros::NodeHandle* n);
@@ -61,6 +78,17 @@ class Navigation {
   // Updates based on an observed laser scan
   void ObservePointCloud(const std::vector<Eigen::Vector2f>& cloud,
                          double time);
+
+  void LaserToPtCloud(const sensor_msgs::LaserScan &msg, const Eigen::Vector2f &laserLoc,
+                   std::vector<Eigen::Vector2f> *point_cloud_);
+
+  vector<float> GetFreePathLength(std::vector<Eigen::Vector2f> *points, float curvature);
+
+  std::vector<Eigen::Vector2f> DetectCollisionPoints(float curvature);
+
+  void SetDistRemaining(const float dist);
+
+  void AvoidObstacles(const sensor_msgs::LaserScan &msg);
 
   // Main function called continously from main
   void Run();
@@ -100,6 +128,10 @@ class Navigation {
   float nav_goal_angle_;
   // Map of the environment.
   vector_map::VectorMap map_;
+
+  float obstacle_threshold_;
+
+  void OptimalControl();
 };
 
 }  // namespace navigation

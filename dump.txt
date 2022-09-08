@@ -1,0 +1,11 @@
+Build_type is [Release]
+[  5%] Built target rospack_genmsg_libexe
+[ 35%] Built target amrl_shared_lib
+[ 50%] Built target shared_library
+[ 60%] Built target simple_queue_test
+[ 70%] Built target eigen_tutorial
+[ 70%] Built target rosbuild_precompile
+[ 75%] Building CXX object CMakeFiles/navigation.dir/src/navigation/navigation.cc.o
+[ 80%] Building CXX object CMakeFiles/navigation.dir/src/navigation/navigation_main.cc.o
+[ 85%] Building CXX object CMakeFiles/particle_filter.dir/src/particle_filter/particle_filter.cc.o
+[ 90%] Building CXX object CMakeFiles/particle_filter.dir/src/particle_filter/particle_filter_main.cc.o
